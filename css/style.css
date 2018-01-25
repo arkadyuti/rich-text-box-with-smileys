@@ -59,7 +59,7 @@ h1{
 .text-input {
 	background-color: #f6f6f6;
     width: 50%;
-	height: 30px;
+	min-height: 30px;
 	font-size: 25px;
 	border: 1px solid;
     margin-top: 10px;
@@ -71,9 +71,27 @@ h1{
 	height: 26px;
     margin-top: 2px;
 }
-.split-text {
-
+.history-node .split-text {
+	font-size: 25px;
+}
+.history-node>div {
+	font-size: 15px;
+	margin-bottom: 10px;
 }
 .split-text:focus {
 	outline: none
+}
+
+.history-container {
+	position: absolute;
+    top: 0;
+    width: 40%;
+    right: 0;
+    height: 90vh;
+    border: 1px solid;
+	overflow-y: scroll;
+}
+.history-wrapper {
+	height: 100%;
+	width: 100%;
 }

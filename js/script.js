@@ -130,16 +130,29 @@ var Module = (function () {
 	}
 	/** Event handler which will trigger the function **/
 	var handleInputOnKeyPress = function (e) {
+		if (e.keyCode == 13) {
+			let div = document.createElement("div");
+			div.className = "history-node";
+			div.innerHTML = inputDiv.innerHTML;
+			div.children[div.children.length - 1].innerHTML = new Date()
+			global.dom(".history-wrapper").appendChild(div)
+			div.scrollIntoView();
+			inputDiv.innerHTML = "";
+			return
+		}
 		let initialSpan = global.domAll("#textInput span");
-		if (initialSpan.length < 1) {
+		if (initialSpan[0] == null) {
 			let text = inputDiv.innerHTML;
 			inputDiv.innerHTML = "";
 			let textSpan = createTextSpan(text, inputDiv)
-			if (textSpan) {
-
+			if (e.target.children[0].innerHTML.length > 0) {
 				setCaret(global.dom("#textInput span"), 0)
+			} else {
+				global.dom("#textInput span").innerHTML = "&nbsp;"
+				global.dom("#textInput span").focus()
 			}
-		} else {
+		}
+		else {
 			let span = global.domAll("#textInput span")
 			for (var i = 0; i < span.length; i++) {
 				let spanStr = span[i].innerHTML
