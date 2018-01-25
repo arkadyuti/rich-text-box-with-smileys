@@ -1,3 +1,5 @@
+Clone this repo using `git clone --depth=1 https://github.com/arkadyuti/rich-text-box-with-smileys.git`
+
 #### npm commands 
 
 `npm install` - installs the dependencies

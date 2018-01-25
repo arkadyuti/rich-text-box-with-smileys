@@ -49,15 +49,29 @@ table {
 
 
 /* App CSS */
+h1{
+	font-size: 20px;
+}
 .rich-text-container {
     width: 80%;
     margin: 0 auto;
 }
 .text-input {
-    background-color: #f6f6f6;
+	background-color: #f6f6f6;
     width: 50%;
-    margin: 40px auto;
+	height: 30px;
+    font-size: 25px;
+}
+.text-input:focus {
+	outline: none;
 }
 .rich-smiley {
-	width: 10px
+	height: 26px;
+    margin-top: 2px;
+}
+.split-text {
+
+}
+.split-text:focus {
+	outline: none
 }

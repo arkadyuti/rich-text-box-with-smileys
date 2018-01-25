@@ -1,47 +1,56 @@
-// console.log(global.dom(".text-input")[0].innerHtml);
+
 var Module = (function () {
 	var inputDiv = global.dom(".text-input");
-	var smileys = {
-		heart: {
-			searchStr: ";",
-			charCount: function () {
-				return this.searchStr.length;
-			},
-			imgUrl: "/img/Heart_Emoji_Icon_42x42.png"
+	// inputDiv.focus()
+	var smileys = [{
+		searchStr: "&lt;3",
+		charCount: function () {
+			return this.searchStr.length;
 		},
-		smile: {
-			searchStr: ":",
-			charCount: function () {
-				return this.searchStr.length;
-			},
-			imgUrl: "/img/Smiling_Face_Emoji_Icon_42x42.png"
-		}
-	}
-
-	var getIndicesOf = function (searchStr, str, caseSensitive) {
+		imgUrl: "/img/Heart_Emoji_Icon_42x42.png"
+	}, {
+		searchStr: ":)",
+		charCount: function () {
+			return this.searchStr.length;
+		},
+		imgUrl: "/img/Smiling_Face_Emoji_Icon_42x42.png"
+	}]
+	/**
+   * Function to get the positions of the smile characters
+   * @param {String} searchStr
+   *    String to search for
+	 * @param {String} str
+   *    String in which to search
+   *    
+   **/
+	var getIndicesOf = function (searchStr, str) {
 		var searchStrLen = searchStr.length;
 		if (searchStrLen == 0) {
 			return [];
 		}
 		var startIndex = 0, index, indices = [];
-		if (!caseSensitive) {
-			str = str.toLowerCase();
-			searchStr = searchStr.toLowerCase();
-		}
 		while ((index = str.indexOf(searchStr, startIndex)) > -1) {
 			indices.push(index);
 			startIndex = index + searchStrLen;
 		}
 		return indices;
 	}
+	/**
+   * Function to create smile image and append to respective positions
+   * @param {String} src
+   *    Emoji Url
+	 * @param {HTMLElement} appendTo
+   *    HTML DOM Element
+	 * @param {HTMLElement} className
+   *    Class name of the HTML DOM Element
+   *
+   **/
 	var createSmileImg = function (src, appendTo, className) {
-		// var appendTo = global.dom("#textInput")
 		var img = document.createElement('img');
 		img.src = src
-		img.className = "rich-smiley"
+		img.className = className ? className : "rich-smiley"
 		var parentGuest = appendTo;
 		var childGuest = img;
-		// childGuest.id = "two";
 		if (parentGuest.nextSibling) {
 			parentGuest.parentNode.insertBefore(childGuest, parentGuest.nextSibling);
 		}
@@ -50,6 +59,16 @@ var Module = (function () {
 		}
 		return img
 	}
+	/**
+   * Function to create input span and append to respective positions
+   * @param {String} text
+   *    Text to insert into the span
+	 * @param {HTMLElement} appendTo
+   *    HTML DOM Element
+	 * @param {HTMLElement} className
+   *    Class name of the HTML DOM Element
+   *
+   **/
 	var createTextSpan = function (text, appendTo, className) {
 		var span = document.createElement('span');
 		span.innerHTML = text;
@@ -66,7 +85,6 @@ var Module = (function () {
 		span.className = "split-text"
 		var parentGuest = appendTo;
 		var childGuest = span;
-		// childGuest.id = "two";
 		if (parentGuest.nextSibling) {
 			parentGuest.parentNode.insertBefore(childGuest, parentGuest.nextSibling);
 		}
@@ -75,8 +93,31 @@ var Module = (function () {
 		}
 		return span
 	}
-	function setCaret(element, index) {
-		console.log(index)
+	var createSmileDynamic = function (span, spanStr, smileyObj) {
+		let indices = getIndicesOf(smileyObj.searchStr, spanStr);
+		let spanText = spanStr.slice(0, indices);
+		let restChar = spanStr.slice((indices[0] + smileyObj.charCount()), spanStr.length)
+		span.innerHTML = spanText
+		let img = createSmileImg(smileyObj.imgUrl, span)
+		if (restChar && restChar.length > 0) {
+			createDynamicSpan(restChar, img)
+		}
+		if (!img.nextElementSibling) {
+			let span = createTextSpan("&nbsp;", inputDiv)
+			setCaret(span, 0)
+		} else {
+			setCaret(img.nextElementSibling, 0)
+		}
+	}
+	/**
+   * Function to place the caret or cursor in the position after creating a dom
+	 * @param {HTMLElement} element
+   *    HTML DOM Element in which we want to put the caret
+	 * @param {Number} index
+   *    Index of the cursor
+   *
+   **/
+	var setCaret = function (element, index) {
 		var el = element ? element : inputDiv;
 		var range = document.createRange();
 		var sel = window.getSelection();
@@ -87,67 +128,24 @@ var Module = (function () {
 		sel.addRange(range);
 		el.focus();
 	}
-	function getCaretPosition(editableDiv) {
-		var caretPos = 0,
-			sel, range;
-		if (window.getSelection) {
-			sel = window.getSelection();
-			if (sel.rangeCount) {
-				range = sel.getRangeAt(0);
-				if (range.commonAncestorContainer.parentNode == editableDiv) {
-					caretPos = range.endOffset;
-				}
-			}
-		} else if (document.selection && document.selection.createRange) {
-			range = document.selection.createRange();
-			if (range.parentElement() == editableDiv) {
-				var tempEl = document.createElement("span");
-				editableDiv.insertBefore(tempEl, editableDiv.firstChild);
-				var tempRange = range.duplicate();
-				tempRange.moveToElementText(tempEl);
-				tempRange.setEndPoint("EndToEnd", range);
-				caretPos = tempRange.text.length;
-			}
-		}
-		return caretPos;
-	}
-	var createSmileDynamic = function (span, spanStr) {
-		let indices = getIndicesOf(smileys.smile.searchStr, spanStr);
-		let spanText = spanStr.slice(0, indices);
-		let restChar = spanStr.slice((indices[0] + 1), spanStr.length)
-		span.innerHTML = spanText
-		let img = createSmileImg(smileys.smile.imgUrl, span)
-
-		if (restChar && restChar.length > 0) {
-			createDynamicSpan(restChar, img)
-		}
-
-		if (!img.nextElementSibling) {
-			let test = createTextSpan("&nbsp;", inputDiv)
-			// console.log(test)
-			// global.domAll(".split-text")[1].focus()
-			setCaret(test, 0)
-		} else {
-			// debugger
-			setCaret(img.nextElementSibling, 0)
-		}
-	}
+	/** Event handler which will trigger the function **/
 	var handleInputOnKeyPress = function (e) {
-		console.log(getCaretPosition(inputDiv))
-		if (global.dom("#textInput span") == null) {
+		if (global.domAll("#textInput span").length < 1) {
 			let text = inputDiv.innerHTML;
 			inputDiv.innerHTML = "";
-			createTextSpan(text, inputDiv)
-			setCaret(global.dom("#textInput span"))
-			// debugger
-			// console.log(getIndicesOf(smileys.heart.searchStr, fullStr, false));
-			// console.log(getIndicesOf(smileys.smile.searchStr, fullStr, false));
+			let textSpan = createTextSpan(text, inputDiv)
+			if (textSpan) {
+
+				setCaret(global.dom("#textInput span"), 0)
+			}
 		} else {
 			let span = global.domAll("#textInput span")
 			for (var i = 0; i < span.length; i++) {
 				let spanStr = span[i].innerHTML
-				if (spanStr.indexOf(smileys.smile.searchStr) > -1) {
-					createSmileDynamic(span[i], spanStr)
+				for (var j = 0; j < smileys.length; j++) {
+					if (spanStr.indexOf(smileys[j].searchStr) > -1) {
+						createSmileDynamic(span[i], spanStr, smileys[j])
+					}
 				}
 			}
 		}
@@ -156,16 +154,9 @@ var Module = (function () {
 	inputDiv.addEventListener("keyup", handleInputOnKeyPress)
 
 	var myObject = {
-		someMethod: function () {
-			console.log("someMethod")
-		},
 		smileys: smileys,
-		createSmileImg: createSmileImg,
-		createTextSpan: createTextSpan,
 	};
 
 	return myObject;
 
 })();
-
-// Module.someMethod()
