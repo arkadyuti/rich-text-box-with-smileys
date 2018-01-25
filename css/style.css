@@ -60,7 +60,9 @@ h1{
 	background-color: #f6f6f6;
     width: 50%;
 	height: 30px;
-    font-size: 25px;
+	font-size: 25px;
+	border: 1px solid;
+    margin-top: 10px;
 }
 .text-input:focus {
 	outline: none;

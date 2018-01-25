@@ -1,7 +1,7 @@
 
 var Module = (function () {
 	var inputDiv = global.dom(".text-input");
-	// inputDiv.focus()
+	inputDiv.focus()
 	var smileys = [{
 		searchStr: "&lt;3",
 		charCount: function () {
@@ -130,7 +130,8 @@ var Module = (function () {
 	}
 	/** Event handler which will trigger the function **/
 	var handleInputOnKeyPress = function (e) {
-		if (global.domAll("#textInput span").length < 1) {
+		let initialSpan = global.domAll("#textInput span");
+		if (initialSpan.length < 1) {
 			let text = inputDiv.innerHTML;
 			inputDiv.innerHTML = "";
 			let textSpan = createTextSpan(text, inputDiv)
